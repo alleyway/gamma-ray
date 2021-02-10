@@ -44,4 +44,5 @@ external/
 doc/*_intensity.csv
 doc/data/quote/*
 doc/data/trade/*
+doc/data/*.csv
 .idea/
