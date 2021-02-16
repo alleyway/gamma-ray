@@ -13,6 +13,12 @@ import datetime
 import pandas as pd
 from datetime import timedelta, date
 
+DATE_FORMAT = "%Y-%m-%dD%H:%M:%S.%f000"
+
+def dateparse(time_in_str: str):
+    return datetime.datetime.strptime(time_in_str, DATE_FORMAT)
+
+
 def process(file: str, quote_or_trade: str):
     print(quote_or_trade)
     mode = "a"
@@ -20,13 +26,14 @@ def process(file: str, quote_or_trade: str):
     if x == 0:
         mode = "w"
         header = True
-    df = pd.read_csv(f'data/{quote_or_trade}/{file}')
+    df = pd.read_csv(f'data/{quote_or_trade}/{file}', index_col='timestamp', parse_dates=True, date_parser=dateparse)
 
     symbols = df.symbol.unique()
     # df.drop(columns=["symbol"], inplace=True)
     for symbol in symbols:
         # print(f'Extracting {symbol}')
-        df[df['symbol'] == symbol].drop(columns=["symbol"]).to_csv(f'data/{symbol}_{quote_or_trade}.csv', mode=mode, header=header)
+        df[df['symbol'] == symbol].drop(columns=["symbol"]).to_csv(f'data/{symbol}_{quote_or_trade}.csv', mode=mode,
+                                                                   header=header, date_format=DATE_FORMAT)
 
 
 file_list = sorted(glob.glob("data/*/*.csv.gz"))
